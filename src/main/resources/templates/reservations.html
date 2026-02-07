@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Réservations | Future Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<div class="container">
+    <h2>Liste des réservations</h2>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Id client</th>
+                <th>Passagers</th>
+                <th>Date/heure arrivée</th>
+                <th>Hotel</th>
+                <th>Id hotel</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${reservations}">
+                <td th:text="${r.id}"></td>
+                <td><span class="badge" th:text="${r.id_client}"></span></td>
+                <td th:text="${r.nombre_passager}"></td>
+                <td th:text="${r.date_heure_arrive}"></td>
+                <td th:text="${r.hotel_nom}"></td>
+                <td th:text="${r.id_hotel}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
