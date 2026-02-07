@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accueil</title>
+    <link rel="stylesheet" th:href="@{/css/booking.css}" href="/css/booking.css" />
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar('Accueil')}"></div>
+
+<div class="container">
+    <div class="header">
+        <h2>Bienvenue</h2>
+    </div>
+
+    <div class="card home-card">
+        <div>
+            Cette application affiche les réservations enregistrées dans le Backoffice.
+        </div>
+
+        <div class="home-actions">
+            <a class="link-btn" th:href="@{/reservations}" href="/reservations">Voir les réservations</a>
+        </div>
+
+        <div class="muted">
+            Backoffice API attendue: <code>http://localhost:8080/BackofficeReservation/api/reservations</code>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

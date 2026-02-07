@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="navbar(title)">
+    <div class="topbar">
+        <div class="topbar-inner">
+            <div class="brand">Frontoffice Reservations</div>
+            <nav class="nav">
+                <a class="nav-link" th:href="@{/home}" href="/home">Accueil</a>
+                <a class="nav-link" th:href="@{/reservations}" href="/reservations">Réservations</a>
+            </nav>
+        </div>
+    </div>
+</div>
+</body>
+</html>

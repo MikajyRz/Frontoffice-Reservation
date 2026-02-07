@@ -1,4 +1,7 @@
-package com.frontoffice;
+package com.frontoffice.dto;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ReservationRowDto {
     private int id;
@@ -38,6 +41,18 @@ public class ReservationRowDto {
 
     public void setDate_heure_arrive(String date_heure_arrive) {
         this.date_heure_arrive = date_heure_arrive;
+    }
+
+    public String getDate_heure_arrive_formatted() {
+        if (date_heure_arrive == null || date_heure_arrive.isBlank()) {
+            return "";
+        }
+        try {
+            LocalDateTime ldt = LocalDateTime.parse(date_heure_arrive);
+            return ldt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        } catch (Exception e) {
+            return date_heure_arrive;
+        }
     }
 
     public int getId_hotel() {
