@@ -27,7 +27,16 @@ public class ReservationsController {
             @RequestParam(name = "to", required = false) String to,
             Model model) {
 
-        List<ReservationRowDto> reservations = client.listReservations();
+        List<ReservationRowDto> reservations;
+        try {
+            reservations = client.listReservations();
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("reservations", List.of());
+            model.addAttribute("from", from == null ? "" : from);
+            model.addAttribute("to", to == null ? "" : to);
+            return "reservations";
+        }
         List<ReservationRowDto> filtered = new ArrayList<>();
 
         LocalDate fromDate = parseDate(from);
