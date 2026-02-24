@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Assignation Véhicule</title>
+    <link rel="stylesheet" th:href="@{/css/booking.css}" href="/css/booking.css" />
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar('Assignation Véhicule')}"></div>
+
+<div class="container">
+    <div class="header">
+        <h2>Assignation Véhicule</h2>
+    </div>
+
+    <div class="card">
+        <div th:if="${error}" class="muted" style="margin-bottom: 12px; color: red;">
+            <strong>Erreur:</strong> <span th:text="${error}"></span>
+        </div>
+
+        <form method="post" action="/assignation/plan">
+            <div style="margin-bottom: 20px;">
+                <label for="date">Choisir une date pour l'assignation :</label>
+                <input id="date" type="date" name="date" required style="padding: 8px; border: 1px solid #ddd; border-radius: 4px;"/>
+            </div>
+            <div>
+                <button class="btn" type="submit">Lancer l'assignation</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
