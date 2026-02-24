@@ -66,4 +66,35 @@ public class BackofficeReservationsClient {
             throw new RuntimeException("Erreur lors de l'appel API backoffice: " + baseUrl + "/api/reservations", e);
         }
     }
+
+    public JsonNode planDate(String date) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            if (apiToken != null && !apiToken.isBlank()) {
+                headers.setBearerAuth(apiToken);
+            }
+            headers.set("Content-Type", "application/x-www-form-urlencoded");
+            
+            String body = "date=" + date;
+            HttpEntity<String> entity = new HttpEntity<>(body, headers);
+
+            ResponseEntity<String> resp = restTemplate.exchange(
+                    baseUrl + "/api/plan-date",
+                    HttpMethod.POST,
+                    entity,
+                    String.class);
+
+            String json = resp.getBody();
+            if (json == null || json.isBlank()) {
+                return null;
+            }
+
+            JsonNode root = objectMapper.readTree(json);
+            return root.get("data");
+        } catch (HttpClientErrorException.Unauthorized e) {
+            throw new RuntimeException("Token invalide ou expire", e);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de l'appel API backoffice: " + baseUrl + "/api/plan-date", e);
+        }
+    }
 }
