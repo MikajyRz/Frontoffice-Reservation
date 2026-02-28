@@ -30,6 +30,7 @@ public class AssignationController {
             if (result != null) {
                 model.addAttribute("assigned", result.get("assigned"));
                 model.addAttribute("unassigned", result.get("unassigned"));
+                model.addAttribute("unusedVehicles", result.get("unusedVehicles"));
             }
             return "assignationResult";
         } catch (Exception e) {

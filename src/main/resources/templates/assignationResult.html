@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Résultats de l'Assignation</title>
+    <title>Résultats de la planification</title>
     <link rel="stylesheet" th:href="@{/css/booking.css}" href="/css/booking.css" />
     <style>
         .result-section { margin-top: 30px; }
@@ -13,6 +13,9 @@
         .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.85em; }
         .status-assigned { background-color: #dff0d8; color: #3c763d; }
         .status-unassigned { background-color: #f2dede; color: #a94442; }
+        .badge { display: inline-block; padding: 3px 6px; font-size: 0.75em; font-weight: 700; line-height: 1; text-align: center; white-space: nowrap; vertical-align: baseline; border-radius: 0.25em; }
+        .badge-info { background-color: #5bc0de; color: white; }
+        .error-text { color: #a94442; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -20,57 +23,90 @@
 
 <div class="container">
     <div class="header">
-        <h2>Résultats de l'Assignation pour le <span th:text="${date}"></span></h2>
+        <h2>Résultats de la planification</h2>
     </div>
 
-    <div class="card">
-        <!-- Section: Réservations Assignées -->
-        <div class="result-section">
-            <h3>Réservations Assignées</h3>
-            <div th:if="${assigned == null || assigned.size() == 0}" class="muted">
-                Aucune réservation n'a été assignée.
-            </div>
-            <div th:if="${assigned != null && assigned.size() > 0}" class="table-wrap">
-                <table class="assigned-table">
-                    <thead>
-                    <tr>
-                        <th>Véhicule</th>
-                        <th>Réservation ID</th>
-                        <th>Lieu</th>
-                        <th>Départ</th>
-                        <th>Arrivée</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="trip : ${assigned}">
-                        <td th:text="${trip.get('vehicule').asText()}"></td>
-                        <td th:text="${trip.get('reservationId').asInt()}"></td>
-                        <td th:text="${trip.get('lieu').asText()}"></td>
-                        <td th:text="${trip.get('dateDepart').asText()}"></td>
-                        <td th:text="${trip.get('dateArrivee').asText()}"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div th:if="${assigned != null and !assigned.isEmpty()}" class="card">
+        <h3>Trajets assignés</h3>
+        <p>Voici la liste des réservations qui ont pu être assignées à un véhicule.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Véhicule</th>
+                    <th>Détails Véhicule</th>
+                    <th>Réservation</th>
+                    <th>Passagers</th>
+                    <th>Lieu</th>
+                    <th>Départ</th>
+                    <th>Arrivée</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="trip : ${assigned}">
+                    <td><strong th:text="${trip.get('vehicule').asText()}"></strong></td>
+                    <td>
+                        <span class="badge badge-info" th:text="${trip.get('vehiculeDetails').get('type_carburant').asText()}"></span>
+                        <span class="badge" th:text="${trip.get('vehiculeDetails').get('nb_place').asInt()} + ' places'"></span>
+                    </td>
+                    <td th:text="'#' + ${trip.get('reservationId').asInt()}"></td>
+                    <td th:text="${trip.get('nbPassagers').asInt()}"></td>
+                    <td th:text="${trip.get('lieu').asText()}"></td>
+                    <td th:text="${trip.get('dateDepart').asText()}"></td>
+                    <td th:text="${trip.get('dateArrivee').asText()}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <!-- Section: Réservations Non Assignées -->
-        <div class="result-section">
-            <h3>Réservations Non Assignées</h3>
-            <div th:if="${unassigned == null || unassigned.size() == 0}" class="muted" style="color: green;">
-                Toutes les réservations ont été assignées !
-            </div>
-            <div th:if="${unassigned != null && unassigned.size() > 0}">
-                <p>Les IDs de réservations suivants n'ont pas pu être assignés à un véhicule (manque de capacité ou de véhicules) :</p>
-                <ul class="unassigned-list">
-                    <li th:each="id : ${unassigned}" th:text="'Réservation #' + ${id.asInt()}"></li>
-                </ul>
-            </div>
-        </div>
+    <div th:if="${unusedVehicles != null and !unusedVehicles.isEmpty()}" class="card">
+        <h3>Véhicules non utilisés</h3>
+        <p>Ces véhicules étaient disponibles mais n'ont pas été nécessaires ou ne correspondaient pas aux critères.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Immatriculation</th>
+                    <th>Carburant</th>
+                    <th>Capacité</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="v : ${unusedVehicles}">
+                    <td th:text="${v.get('immatricule').asText()}"></td>
+                    <td th:text="${v.get('type_carburant').asText()}"></td>
+                    <td th:text="${v.get('nb_place').asInt()} + ' places'"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <div style="margin-top: 20px;">
-            <a href="/assignation/form" class="btn">Nouvelle Assignation</a>
-        </div>
+    <div th:if="${unassigned != null and !unassigned.isEmpty()}" class="card">
+        <h3>⚠️ Réservations non assignées</h3>
+        <p class="error-text">Aucun véhicule disponible n'a pu satisfaire ces demandes.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Réservation</th>
+                    <th>Client</th>
+                    <th>Passagers</th>
+                    <th>Lieu</th>
+                    <th>Date & Heure</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="res : ${unassigned}">
+                    <td th:text="'#' + ${res.get('id').asInt()}"></td>
+                    <td th:text="${res.get('id_client').asText()}"></td>
+                    <td th:text="${res.get('nombre_passager').asInt()}"></td>
+                    <td th:text="${res.get('lieu_nom').asText()}"></td>
+                    <td th:text="${res.get('date_heure_arrive').asText()}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-actions">
+        <a class="link-btn" href="/assignation/form">Nouvelle planification</a>
+        <a class="link-btn" href="/">Retour</a>
     </div>
 </div>
 
