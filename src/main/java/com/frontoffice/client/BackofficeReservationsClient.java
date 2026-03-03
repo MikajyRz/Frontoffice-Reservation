@@ -63,7 +63,8 @@ public class BackofficeReservationsClient {
         } catch (HttpClientErrorException.Unauthorized e) {
             throw new RuntimeException("Token invalide ou expire", e);
         } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de l'appel API backoffice: " + baseUrl + "/api/reservations", e);
+            e.printStackTrace(); // Log the full stack trace for debugging
+            throw new RuntimeException("Erreur lors de l'appel API backoffice: " + baseUrl + "/api/reservations. Cause: " + e.getMessage(), e);
         }
     }
 
