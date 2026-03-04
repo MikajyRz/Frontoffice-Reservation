@@ -3,9 +3,7 @@ package com.frontoffice.dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ReservationRowDto {
@@ -13,12 +11,8 @@ public class ReservationRowDto {
     private String id_client;
     private int nombre_passager;
     private String date_heure_arrive;
-    
-    @JsonProperty("id_lieu")
-    private int id_hotel;
-    
-    @JsonProperty("lieu_nom")
-    private String hotel_nom;
+    private int id_lieu;
+    private String lieu_nom;
 
     public int getId() {
         return id;
@@ -65,18 +59,34 @@ public class ReservationRowDto {
     }
 
     public int getId_hotel() {
-        return id_hotel;
+        return id_lieu;
     }
 
     public void setId_hotel(int id_hotel) {
-        this.id_hotel = id_hotel;
+        this.id_lieu = id_hotel;
     }
 
     public String getHotel_nom() {
-        return hotel_nom;
+        return lieu_nom;
     }
 
     public void setHotel_nom(String hotel_nom) {
-        this.hotel_nom = hotel_nom;
+        this.lieu_nom = hotel_nom;
+    }
+
+    public int getId_lieu() {
+        return id_lieu;
+    }
+
+    public void setId_lieu(int id_lieu) {
+        this.id_lieu = id_lieu;
+    }
+
+    public String getLieu_nom() {
+        return lieu_nom;
+    }
+
+    public void setLieu_nom(String lieu_nom) {
+        this.lieu_nom = lieu_nom;
     }
 }
