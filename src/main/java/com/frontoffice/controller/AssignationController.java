@@ -22,10 +22,10 @@ public class AssignationController {
         return "assignationForm";
     }
 
-    @PostMapping("/assignation/plan")
+    @GetMapping("/assignation/plan")
     public String plan(@RequestParam("date") String date, Model model) {
         try {
-            JsonNode result = client.planDate(date);
+            JsonNode result = client.getPlan(date);
             model.addAttribute("date", date);
             if (result != null) {
                 // Grouper les assignations par véhicule
