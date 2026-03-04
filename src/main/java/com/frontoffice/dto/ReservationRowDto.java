@@ -3,12 +3,21 @@ package com.frontoffice.dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ReservationRowDto {
     private int id;
     private String id_client;
     private int nombre_passager;
     private String date_heure_arrive;
+    
+    @JsonProperty("id_lieu")
     private int id_hotel;
+    
+    @JsonProperty("lieu_nom")
     private String hotel_nom;
 
     public int getId() {
