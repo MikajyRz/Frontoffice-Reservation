@@ -22,14 +22,28 @@ public class AssignationController {
         return "assignationForm";
     }
 
-    @PostMapping("/assignation/plan")
+    @GetMapping("/assignation/plan")
     public String plan(@RequestParam("date") String date, Model model) {
         try {
-            JsonNode result = client.planDate(date);
+            JsonNode result = client.getPlan(date);
             model.addAttribute("date", date);
             if (result != null) {
-                model.addAttribute("assigned", result.get("assigned"));
+                // Grouper les assignations par véhicule
+                JsonNode assignedNode = result.get("assigned");
+                java.util.Map<String, java.util.List<JsonNode>> assignedGrouped = new java.util.HashMap<>();
+                if (assignedNode != null && assignedNode.isArray()) {
+                    for (JsonNode trip : assignedNode) {
+                        String immat = trip.get("vehicule").asText();
+                        if (!assignedGrouped.containsKey(immat)) {
+                            assignedGrouped.put(immat, new java.util.ArrayList<>());
+                        }
+                        assignedGrouped.get(immat).add(trip);
+                    }
+                }
+                model.addAttribute("assignedGrouped", assignedGrouped);
+                
                 model.addAttribute("unassigned", result.get("unassigned"));
+                model.addAttribute("unusedVehicles", result.get("unusedVehicles"));
             }
             return "assignationResult";
         } catch (Exception e) {
