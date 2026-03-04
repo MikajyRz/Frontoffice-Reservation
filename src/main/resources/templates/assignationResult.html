@@ -6,38 +6,144 @@
     <link rel="stylesheet" th:href="@{/css/booking.css}" href="/css/booking.css" />
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        /* Style inspiré de Booking.com */
+        body {
+            background-color: #f5f7fa;
+            color: #262626;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .result-section {
+            background: #fff;
+            border: 1px solid #e7e7e7;
+            border-radius: 8px; /* Coins légèrement arrondis */
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04); /* Ombre très légère */
+        }
+
+        .result-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #262626;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Tableau épuré */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .table thead th {
+            background-color: #f2f2f2; /* Gris très clair pour l'en-tête */
+            color: #4a4a4a;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e7e7e7;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e7e7e7; /* Bordure fine entre les lignes */
+            vertical-align: middle;
+            color: #262626;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f9f9f9; /* Effet hover subtil */
+        }
+
+        /* Badges plus discrets */
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px; /* Coins carrés arrondis */
+            line-height: 1;
+        }
+
+        .badge-info {
+            background-color: #e6f7ff;
+            color: #0057b8; /* Bleu Booking */
+            border: 1px solid #bae7ff;
+        }
+
+        .badge-success {
+            background-color: #f6ffed;
+            color: #389e0d;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .badge-danger {
+            background-color: #fff1f0;
+            color: #cf1322;
+            border: 1px solid #ffa39e;
+        }
+
+        .btn {
+            background-color: #0071c2; /* Bleu Booking */
+            color: white;
+            font-weight: 600;
+            border-radius: 4px;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #005999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #6b7280;
+            background: #f9fafb;
+            border-radius: 6px;
+            border: 1px dashed #e5e7eb;
+        }
+    </style>
 </head>
 <body>
 <div th:replace="~{fragments/navbar :: navbar('Résultats Assignation')}"></div>
 
 <div class="container">
     <div class="header">
-        <h2><i class="fas fa-calendar-check"></i> Résultats de la planification</h2>
-        <p class="subtitle">Date : <strong th:text="${date}"></strong></p>
+        <h2><i class="fas fa-calendar-check" style="color: #0071c2;"></i> Résultats de la planification</h2>
+        <p class="subtitle" style="color: #6b7280; margin-top: 4px;">Date sélectionnée : <strong th:text="${date}" style="color: #262626;"></strong></p>
     </div>
 
-    <!-- Section 1: Véhicules Assignés (Groupés) -->
-    <div th:if="${assignedGrouped != null and !assignedGrouped.isEmpty()}" class="result-section">
-        <h3 style="margin-bottom: 20px; color: #28a745;"><i class="fas fa-check-circle"></i> Véhicules Assignés</h3>
+    <!-- Section 1: Tableau des Assignations -->
+    <div class="result-section">
+        <h3>Liste des Assignations Confirmées</h3>
         
-        <div th:each="entry : ${assignedGrouped}" class="vehicle-block">
-            <!-- En-tête du véhicule -->
-            <div class="vehicle-header">
-                <div class="vehicle-title">
-                    <i class="fas fa-shuttle-van"></i> 
-                    <span th:text="${entry.key}"></span>
-                </div>
-                <div class="vehicle-badges">
-                     <span class="badge badge-info" th:text="'Carburant : ' + ${entry.value[0].get('vehiculeDetails').get('type_carburant').asText()}"></span>
-                     <span class="badge badge-success" th:text="${entry.value[0].get('vehiculeDetails').get('nb_place').asInt()} + ' places'"></span>
-                </div>
-            </div>
-            
-            <!-- Liste des réservations pour ce véhicule -->
-            <table class="assigned-table">
+        <div th:if="${assignedGrouped != null and !assignedGrouped.isEmpty()}">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th>Réf.</th>
+                        <th style="width: 50px;"># ID</th> <!-- Nouvelle colonne ID -->
+                        <th>Véhicule</th>
+                        <th>Caractéristiques</th>
+                        <th>Réf. Réservation</th>
                         <th>Client</th>
                         <th>Passagers</th>
                         <th>Lieu</th>
@@ -46,73 +152,77 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr th:each="trip : ${entry.value}">
-                        <td><strong th:text="'#' + ${trip.get('reservationId').asInt()}"></strong></td>
-                        <td>
-                            <span th:if="${trip.has('clientId')}" th:text="${trip.get('clientId').asText()}"></span>
-                            <span th:unless="${trip.has('clientId')}">-</span>
-                        </td>
-                        <td th:text="${trip.get('nbPassagers').asInt()}"></td>
-                        <td th:text="${trip.get('lieu').asText()}"></td>
-                        <td th:text="${trip.get('dateDepart').asText().replace('T', ' ')}"></td>
-                        <td th:text="${trip.get('dateArrivee').asText()}"></td>
+                    <!-- On itère sur chaque groupe (Véhicule) -->
+                    <th:block th:each="entry : ${assignedGrouped}">
+                        <!-- On itère sur chaque voyage de ce véhicule -->
+                        <tr th:each="trip : ${entry.value}">
+                            <!-- ID Véhicule -->
+                            <td>
+                                <strong th:text="${entry.value[0].get('vehiculeDetails').get('id').asInt()}"></strong>
+                            </td>
+                            
+                            <!-- Info Véhicule -->
+                            <td>
+                                <strong th:text="${entry.key}" style="color: #0071c2;"></strong>
+                            </td>
+                            <td>
+                                <span class="badge badge-info" th:text="'Carburant : ' + ${entry.value[0].get('vehiculeDetails').get('type_carburant').asText()}"></span>
+                                <span class="badge badge-success" th:text="${entry.value[0].get('vehiculeDetails').get('nb_place').asInt()} + ' places'"></span>
+                            </td>
+                            
+                            <!-- Info Réservation -->
+                            <td><strong th:text="'#' + ${trip.get('reservationId').asInt()}"></strong></td>
+                            <td>
+                                <span th:if="${trip.has('clientId')}" th:text="${trip.get('clientId').asText()}"></span>
+                                <span th:unless="${trip.has('clientId')}">-</span>
+                            </td>
+                            <td th:text="${trip.get('nbPassagers').asInt()}"></td>
+                            <td th:text="${trip.get('lieu').asText()}"></td>
+                            <td th:text="${trip.get('dateDepart').asText().replace('T', ' ')}"></td>
+                            <td th:text="${trip.get('dateArrivee').asText()}"></td>
+                        </tr>
+                    </th:block>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${assignedGrouped == null or assignedGrouped.isEmpty()}" class="empty-state">
+            <p>Aucune assignation confirmée pour cette date.</p>
+        </div>
+    </div>
+
+    <!-- Section 2: Réservations Non Assignées -->
+    <div class="result-section">
+        <h3 style="color: #d93025;"><i class="fas fa-exclamation-circle"></i> Réservations Non Assignées</h3>
+        
+        <div th:if="${unassigned != null and !unassigned.isEmpty()}">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Réf.</th>
+                        <th>Client</th>
+                        <th>Passagers</th>
+                        <th>Lieu</th>
+                        <th>Date & Heure Demande</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="res : ${unassigned}">
+                        <td th:text="'#' + ${res.get('id').asInt()}"></td>
+                        <td th:text="${res.get('id_client').asText()}"></td>
+                        <td th:text="${res.get('nombre_passager').asInt()}"></td>
+                        <td th:text="${res.get('lieu_nom').asText()}"></td>
+                        <td th:text="${res.get('date_heure_arrive').asText().replace('T', ' ')}"></td>
+                        <td><span class="badge badge-danger">Non Assigné</span></td>
                     </tr>
                 </tbody>
             </table>
         </div>
-    </div>
-    
-    <div th:if="${assignedGrouped == null or assignedGrouped.isEmpty()}" class="empty-state">
-        <i class="fas fa-info-circle fa-2x"></i>
-        <p>Aucune assignation n'a pu être effectuée pour cette date.</p>
-    </div>
 
-    <!-- Section 2: Réservations Non Assignées -->
-    <div th:if="${unassigned != null and !unassigned.isEmpty()}" class="card card-danger result-section">
-        <h3><i class="fas fa-exclamation-triangle"></i> Réservations non assignées</h3>
-        <p>Ces réservations n'ont pas pu être satisfaites par manque de véhicules disponibles ou de capacité suffisante.</p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Réf.</th>
-                    <th>Client</th>
-                    <th>Passagers</th>
-                    <th>Lieu</th>
-                    <th>Date & Heure</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="res : ${unassigned}">
-                    <td th:text="'#' + ${res.get('id').asInt()}"></td>
-                    <td th:text="${res.get('id_client').asText()}"></td>
-                    <td th:text="${res.get('nombre_passager').asInt()}"></td>
-                    <td th:text="${res.get('lieu_nom').asText()}"></td>
-                    <td th:text="${res.get('date_heure_arrive').asText().replace('T', ' ')}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Section 3: Véhicules Non Utilisés -->
-    <div th:if="${unusedVehicles != null and !unusedVehicles.isEmpty()}" class="card result-section">
-        <h3><i class="fas fa-warehouse"></i> Véhicules non utilisés</h3>
-        <p>Ces véhicules sont restés au garage pour cette date.</p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Immatriculation</th>
-                    <th>Carburant</th>
-                    <th>Capacité</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="v : ${unusedVehicles}">
-                    <td th:text="${v.get('immatricule').asText()}"></td>
-                    <td th:text="${v.get('type_carburant').asText()}"></td>
-                    <td th:text="${v.get('nb_place').asInt()} + ' places'"></td>
-                </tr>
-            </tbody>
-        </table>
+        <div th:if="${unassigned == null or unassigned.isEmpty()}" class="empty-state">
+            <p style="color: #389e0d;"><i class="fas fa-check"></i> Aucune réservation en attente. Tout a été traité !</p>
+        </div>
     </div>
     
     <div style="margin-top: 40px; text-align: center;">
